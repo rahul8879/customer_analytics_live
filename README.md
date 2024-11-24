@@ -92,4 +92,3 @@ By the end of this project, you'll gain the expertise to build **AI-powered cust
 
 ---
 
-Feel free to customize the placeholders (e.g., add the actual course link) and adapt the content to suit your project branding.
