@@ -72,3 +72,15 @@ async def get_basic_stats():
     """Returns total monthly revenue."""
     total = data['Monthly_Revenue'].sum().round(2)
     return {"total_monthly_revenue": total}
+
+
+@app.get("/top-performing-customers")
+async def get_top_customers():
+    try:
+        top_customers = data.nlargest(10, "Monthly_Revenue")[[
+            "Customer_ID", "Age", "Gender", "Monthly_Revenue", "Segment"
+        ]]
+        result = top_customers.to_dict(orient="records")
+        return {"data": result}
+    except Exception as e:
+        return {'error': str(e)}
