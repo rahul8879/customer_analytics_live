@@ -1,12 +1,19 @@
 from fastapi import FastAPI
 import pandas as pd
-
+from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5500"],  # Frontend origin
+    allow_credentials=True,
+    allow_methods=["*"],  # Allow all HTTP methods (GET, POST, etc.)
+    allow_headers=["*"],  # Allow all HTTP headers
+)
 
 # actual data
 data = pd.read_csv('../Data/segement_output.csv')
-
 total_customer = len(data)
+
 
 segment_stats = data.groupby('Segment').agg({
     'Monthly_Revenue': 'mean',

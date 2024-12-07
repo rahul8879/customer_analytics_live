@@ -1,0 +1,138 @@
+<html>
+    <title>Customer Analytics</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th,
+        td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f4f4f4;
+        }
+
+        button {
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+  
+    </style>
+    <body>
+        <h1>Customer Segments</h1>
+        <div>
+            <h3>Segment Details</h3>
+            <input type="number", id="clusterId" placeholder="Enter Cluster ID"/>
+            <button onclick="getSegmentDetails()">Fetch Details</button>
+            <pre id="segmentDetails"></pre>
+        </div>
+
+        <div>
+            <h3>Segment Statistics</h3>
+            <button onclick="getSegmentStats()">Fetch Statistics</button>
+            <pre id="segmentStats"></pre>
+        </div>
+
+        <div>
+            <h3>Top Performing Customers</h3>
+            <button onclick="getTopCustomers()">Fetch Top Customers</button>
+           <table id="topCustomersTable">
+            <thead>
+                <tr>
+                    <th>Customer ID</th>
+                    <th>Age</th>
+                    <th>Gender</th>
+                    <th>Monthly Revenue</th>
+                    <th>Segment</th>
+
+                </tr>
+                <tbody></tbody>
+            </thead>
+
+
+           </table>
+        </div>
+        <script>
+          const apiBaseUrl = "http://localhost:8000";
+
+            async function getSegmentDetails() {
+                const clusterId = document.getElementById("clusterId").value;
+                const response = await fetch(`${apiBaseUrl}/get-segment-details/${clusterId}`);
+                const data = await response.json();
+                document.getElementById("segmentDetails").innerText = JSON.stringify(data, null, 2);
+            }
+        async function getSegmentStats() {
+                try {
+                    const response = await fetch(`${apiBaseUrl}/segment-stats`);
+                    const data = await response.json();
+                    console.log(data); // Debug the response
+                    document.getElementById("segmentStats").innerText = JSON.stringify(data, null, 2);
+                } catch (error) {
+                    console.error("Error fetching segment stats:", error);
+                }
+            }
+
+            async function getTopCustomers(){
+                const response = await fetch(`${apiBaseUrl}/top-performing-customers`);
+                const data = await response.json();
+                const tableBody = document.getElementById("topCustomersTable").querySelector("tbody");
+                tableBody.innerHTML = ""; // Clear previous data
+                if(data.data){
+                    data.data.forEach(customer=>{
+                        const row = document.createElement("tr")
+                         row.innerHTML = `
+                        <td>${customer.Customer_ID}</td>
+                        <td>${customer.Age}</td>
+                        <td>${customer.Gender}</td>
+                        <td>${customer.Monthly_Revenue}</td>
+                        <td>${customer.Segment}</td>
+                    `;
+                        tableBody.appendChild(row);
+
+
+                    });
+
+
+                }
+                else {
+                    const errorRow = document.createElement("tr");
+                    errorRow.innerHTML = `<td colspan="5">${data.error || "No data found"}</td>`;
+                    tableBody.appendChild(errorRow);
+                }
+            }
+
+            
+
+
+
+
+        </script>
+   
+    </body>
+
+
+
+
+
+
+
+</html>
